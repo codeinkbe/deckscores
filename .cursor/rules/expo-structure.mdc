@@ -1,0 +1,62 @@
+---
+description: Expo Router project structure and file conventions
+alwaysApply: true
+---
+
+# Project Structure
+
+This project is a Turborepo monorepo. The Expo mobile app lives in `apps/mobile/`.
+
+```
+cardapp/                        → Monorepo root
+  apps/
+    mobile/                     → Expo app
+      app/                      → Expo Router screens (file-based routing)
+        (tabs)/                 → Tab layout group
+          _layout.tsx           → Tab navigator layout
+          index.tsx             → First tab screen
+        (auth)/                 → Auth layout group (login, register, etc.)
+          _layout.tsx           → Auth flow layout
+        _layout.tsx             → Root layout (providers, fonts, splash)
+        index.tsx               → Entry redirect / home screen
+        [id].tsx                → Dynamic route
+        +not-found.tsx          → 404 screen
+      components/               → Reusable UI components
+      hooks/                    → Custom React hooks
+      lib/                      → API client, utilities, helpers
+      stores/                   → Zustand state stores
+      constants/                → Theme, colors, spacing, typography tokens
+      assets/                   → Images, fonts, static files
+      types/                    → Mobile-specific TypeScript types
+    web/                        → Next.js app (landing page + API)
+      app/
+        page.tsx                → Landing page
+        api/                    → API route handlers
+      lib/                      → MongoDB client, server helpers
+  packages/
+    shared/                     → Shared TypeScript types + constants
+      src/types/                → Database types, API contracts
+```
+
+## Expo Router Conventions
+
+- **Layouts:** Every route group needs a `_layout.tsx` that defines the navigator (Stack, Tabs, etc.).
+- **Groups:** Use `(groupName)/` to organize routes without affecting the URL path (e.g., `(tabs)/`, `(auth)/`).
+- **Dynamic routes:** Use `[param].tsx` for dynamic segments (e.g., `app/user/[id].tsx`).
+- **Not found:** Use `+not-found.tsx` for unmatched routes.
+
+## Where Things Go
+
+| What | Location | Example |
+|------|----------|---------|
+| Screens / pages | `apps/mobile/app/` | `app/(tabs)/index.tsx` |
+| Reusable components | `apps/mobile/components/` | `components/Button.tsx` |
+| Custom hooks | `apps/mobile/hooks/` | `hooks/useAuth.ts` |
+| API client + helpers | `apps/mobile/lib/` | `lib/api.ts` |
+| Zustand stores | `apps/mobile/stores/` | `stores/useUserStore.ts` |
+| Design tokens | `apps/mobile/constants/` | `constants/colors.ts` |
+| Mobile-specific types | `apps/mobile/types/` | `types/user.ts` |
+| Static assets | `apps/mobile/assets/` | `assets/images/logo.png` |
+| Shared types | `packages/shared/src/types/` | `types/profile.ts` |
+| API routes | `apps/web/app/api/` | `api/profiles/route.ts` |
+| MongoDB client | `apps/web/lib/` | `lib/mongodb.ts` |

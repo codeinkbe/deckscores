@@ -1,0 +1,35 @@
+---
+description: Instructions for creating feature documentation after a task is complete.
+globs: ai-prompts/*.md
+alwaysApply: false
+---
+
+# Documentation Workflow
+
+When I indicate that a feature is complete, or ask you to "document this":
+
+1.  **Create File:** Create a new `.md` file in the `ai-prompts/` folder.
+2.  **Naming:** Use a kebab-case name relevant to the feature (e.g., `ai-prompts/image-upload-feature.md`).
+3.  **Content Structure:**
+    * **Header:** Title and Date.
+    * **What was built:** A concise summary of the feature.
+    * **Why:** The reasoning behind the implementation.
+    * **Files Changed:** A list of the modified or created files.
+    * **Key Implementation Details:** Specific functions, hooks, or logic patterns used.
+
+## Example Template
+
+```markdown
+# Feature: [Name]
+**Date:** [Date]
+
+## What was built and why
+[Description]
+
+## Files Changed
+- `app/page.tsx`
+- `components/ui/new-component.tsx`
+
+## Key Implementation Details
+- Used [Library] for X.
+- Implemented Y pattern for state management.

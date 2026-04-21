@@ -1,0 +1,51 @@
+---
+description: The specific technology stack and libraries used in this project.
+globs: **/*
+alwaysApply: true
+---
+
+# Tech Stack
+
+## Monorepo
+
+- **Tool:** Turborepo (pnpm workspaces)
+- **Structure:** `apps/mobile` (Expo) + `apps/web` (Next.js) + `packages/shared` (types)
+
+## Mobile (`apps/mobile`)
+
+- **Framework:** React Native (Expo)
+- **Navigation:** Expo Router
+- **Language:** TypeScript
+- **Styling:** React Native StyleSheet
+- **Components:** Custom (no UI library)
+- **Icons:** `@expo/vector-icons` (built-in)
+- **Auth:** Clerk (`@clerk/clerk-expo`)
+- **State Management:** Zustand
+- **File/Image Upload:** `expo-image-picker`
+- **Analytics:** PostHog (React Native SDK)
+- **Testing:** Jest + React Native Testing Library
+
+## Web (`apps/web`)
+
+- **Framework:** Next.js (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Auth:** Clerk (`@clerk/nextjs`)
+- **Database:** MongoDB Atlas (Mongoose ODM)
+- **Hosting:** Vercel
+- **Icons:** Lucide React
+
+## MCP Servers
+
+- **`plugin-mongodb-mongodb`** — use for direct database operations (find, insert, aggregate, schema inspection, indexes). Never ask the user to run MongoDB commands manually.
+- **`user-clerk`** — use for Clerk SDK code snippets and integration patterns.
+
+## Implementation Context
+
+- The mobile app authenticates directly with Clerk. No API needed for auth itself.
+- All database operations from the mobile app go through the Next.js API routes (`apps/web/app/api/`). Never call MongoDB directly from mobile code.
+- API routes verify the Clerk session token before interacting with MongoDB.
+- Use Expo Router's file-based routing for all mobile navigation.
+- Use Zustand stores for client-side state management in the mobile app.
+- Define reusable design tokens (colors, spacing, typography) in `apps/mobile/constants/`.
+- Shared TypeScript types live in `packages/shared/src/types/`.

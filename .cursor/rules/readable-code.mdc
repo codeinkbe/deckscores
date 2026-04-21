@@ -1,0 +1,46 @@
+---
+description: Clean code principles — simplify structure, meaningful names, no duplication, readability over cleverness
+alwaysApply: true
+---
+
+# Clean Code Principles
+
+## 1. Simplify Code Structure
+
+- Invert conditionals to reduce nesting (early returns, guard clauses).
+- Collapse and merge related `if` statements — eliminate unnecessary `else` cases.
+- Fail fast: throw errors as soon as a problem is detected to avoid unnecessary steps.
+
+## 2. Use Meaningful Names
+
+- Variable and function names must clearly convey purpose (e.g., `isPasswordLongEnough` not `minPasswordLength`).
+- Rename obscure or ambiguous names to be self-documenting.
+
+## 3. Comments & Formatting
+
+- Delete unnecessary comments — code should be self-documenting.
+- Only add comments for genuinely complex logic.
+- Maintain consistent indentation, spacing, and formatting.
+
+## 4. Consistency & Constants
+
+- Use `const` by default; only use `let` when reassignment is needed.
+- Replace magic numbers/values with named constants.
+- Be consistent with string styles (prefer template literals over concatenation).
+
+## 5. Avoid Duplication
+
+- Consolidate repeated logic into a single shared function.
+- Changes should only need to happen in one location.
+- Be cautious of adding too much coupling when consolidating.
+
+## 6. Single Responsibility & Pure Functions
+
+- Each function should do one thing and do it well.
+- Avoid side effects — prefer pure functions that only return a value.
+
+## 7. Readability Over Cleverness
+
+- Write code that is easy to understand, not code that impresses.
+- Prefer `filter` + `map` over clever `reduce` with bitwise tricks.
+- Avoid premature optimization — optimize only proven bottlenecks.

@@ -1,0 +1,52 @@
+---
+description: Expo-specific conventions and best practices for React Native development
+alwaysApply: true
+---
+
+# Expo App Rules
+
+## Platform & Layout
+
+- Use `SafeAreaView` from `react-native-safe-area-context` (or `useSafeAreaInsets`) for all screens — never assume fixed status bar height.
+- Never hardcode device dimensions. Use `useWindowDimensions` or flex layouts.
+- Handle keyboard avoidance with `KeyboardAvoidingView` on screens with text inputs.
+- Always test layouts on both iOS and Android. Use `Platform.OS` only when platform-specific behavior is truly needed.
+
+## Expo Packages
+
+- Prefer `expo-*` packages over bare `react-native-community` alternatives when an Expo equivalent exists (e.g., `expo-image-picker` over `react-native-image-picker`).
+- Use `expo-secure-store` for sensitive data (auth tokens, secrets) — never use `AsyncStorage` for secrets.
+- Use `expo-constants` to access app config values.
+
+## Navigation (Expo Router)
+
+- Every route group must have a `_layout.tsx` that defines the navigator.
+- Use typed routes: import `router` from `expo-router` and prefer `router.push()` / `router.replace()` over `Link` for programmatic navigation.
+- Protect authenticated routes in the root layout, not in individual screens.
+
+## Styling
+
+- Always use `StyleSheet.create()` — define styles at the bottom of the file, outside the component.
+- Pull colors, spacing, and typography from `constants/` — no magic values.
+- Prefer `gap` (Flexbox) for spacing between siblings over margin hacks.
+
+## Data Access
+
+All database operations from the mobile app go through the Next.js API routes in `apps/web/app/api/`. Never call MongoDB directly from mobile code.
+
+## MongoDB via MCP
+
+Use the `plugin-mongodb-mongodb` MCP server to manage MongoDB directly. Do not ask the user to run MongoDB commands manually.
+
+- **Inspect schema:** Use `collection-schema` and `list-collections` to understand existing data before writing queries.
+- **Read data:** Use `find` and `aggregate` for queries.
+- **Write data:** Use `insert-many`, `update-many`, `delete-many` for data operations.
+- **Indexes:** Use `collection-indexes`, `create-index`, `drop-index` to manage indexes.
+- **Stats:** Use `db-stats` and `collection-storage-size` to inspect database health.
+
+## Clerk via MCP
+
+Use the `user-clerk` MCP server for Clerk SDK code snippets and integration patterns.
+
+- **SDK snippets:** Use `clerk_sdk_snippet` to get implementation examples for specific Clerk features.
+- **List snippets:** Use `list_clerk_sdk_snippets` to discover available snippet topics.

@@ -1,0 +1,49 @@
+---
+description: React + TypeScript patterns to avoid common build errors
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# React TypeScript Patterns
+
+## `useRef` requires an initial value
+
+React 19 types require exactly 1 argument for `useRef`. Omitting the initial value causes a build error.
+
+```typescript
+// BAD — missing initial value
+const ref = useRef<ReturnType<typeof setTimeout>>()
+
+// GOOD — pass null and include null in the type union
+const ref = useRef<ReturnType<typeof setTimeout> | null>(null)
+```
+
+**Mutable vs readonly:** If you need to reassign `.current` (e.g. storing a timeout ID), include `| null` in the type parameter. Without it, React 19 treats `.current` as `readonly`.
+
+## `clearTimeout` / `clearInterval` don't accept `null`
+
+When a ref includes `| null`, guard before calling `clearTimeout`:
+
+```typescript
+// BAD — clearTimeout doesn't accept null
+clearTimeout(debounceRef.current)
+
+// GOOD — guard first
+if (debounceRef.current) clearTimeout(debounceRef.current)
+```
+
+## Discriminated unions: narrow before accessing variant-specific properties
+
+When iterating over a filtered subset of a union type, type the variable with the specific variant so TypeScript knows which properties exist:
+
+```typescript
+type SearchResult =
+  | { type: 'deck'; id: string; name: string }
+  | { type: 'card'; name: string }
+
+// BAD — typed as full union, no access to .id
+const decks: SearchResult[] = results.filter(...)
+
+// GOOD — narrowed to the specific variant
+const decks: Extract<SearchResult, { type: 'deck' }>[] = results.filter(...)
+```

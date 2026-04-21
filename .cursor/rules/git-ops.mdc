@@ -1,0 +1,30 @@
+---
+description: Workflow for git operations, committing changes, and managing branches.
+globs: .git/config
+alwaysApply: false
+---
+
+# Git Automation Workflow
+
+When I ask to **"save this"**, **"commit"**, **"ship it"**, or **"push"**:
+
+## 1. Preparation
+- Always run `git status` first to see what changed.
+- If I didn't specify a branch, ask: "Should I push to `main` or create a new `feat/` branch?"
+
+## 2. Branching Strategy
+- **Main**: If pushing to main, strictly run `git pull` first to avoid conflicts.
+- **New Branch**: Use the format `type/kebab-case-description` (e.g., `feat/user-dashboard`, `fix/login-bug`).
+
+## 3. Commit Standards
+- Stage all relevant files: `git add .` (or specific files if requested).
+- Generate a **Conventional Commit** message based on the actual file changes:
+  - `feat: ...` for new features
+  - `fix: ...` for bug fixes
+  - `refactor: ...` for code cleanup
+  - `docs: ...` for documentation updates
+- **Rule:** Keep the first line under 50 chars. Use a bulleted list for details if complex.
+
+## 4. Execution
+- Run the commit command.
+- Run `git push`. (If new branch, include `-u origin <branch-name>`).

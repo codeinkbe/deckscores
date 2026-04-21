@@ -1,0 +1,43 @@
+---
+description: Guide for initializing the monorepo project from scratch
+alwaysApply: false
+---
+
+# New Project Setup
+
+When asked to set up or initialize the project, **always ask these questions first** before scaffolding anything.
+
+## Required Questions
+
+1. **Project name** — What should the project be called?
+2. **Clerk features** — Which auth methods are needed? (email/password, OAuth, magic link)
+3. **MongoDB collections** — Any collections to create upfront?
+4. **Additional integrations** — PostHog analytics? Push notifications?
+
+Use the `AskQuestion` tool to gather answers efficiently.
+
+## Setup Steps (after answers)
+
+1. Create the Turborepo monorepo: `npx create-turbo@latest <project-name>` (pnpm workspaces)
+2. Set up `apps/mobile` with Expo:
+   - `npx create-expo-app@latest apps/mobile`
+   - Install mobile dependencies: `@clerk/clerk-expo`, `zustand`, `expo-image-picker`, `expo-secure-store`
+3. Set up `apps/web` with Next.js:
+   - `npx create-next-app@latest apps/web`
+   - Install web dependencies: `@clerk/nextjs`, `mongoose`
+4. Create `packages/shared` for shared TypeScript types
+5. Configure `.env` files:
+   - `apps/mobile/.env` — `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`, `EXPO_PUBLIC_API_URL`
+   - `apps/web/.env.local` — `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `MONGODB_URI`
+6. Set up Clerk provider in `apps/mobile/app/_layout.tsx` with `expo-secure-store` as token cache
+7. Set up Clerk middleware in `apps/web/middleware.ts`
+8. Set up MongoDB connection in `apps/web/lib/mongodb.ts`
+9. Run `turbo dev` to verify both apps start
+
+## Key Rules
+
+- **Only scaffold what was requested** — do not add features the user didn't ask for.
+- Expo env vars must be prefixed with `EXPO_PUBLIC_` to be accessible in client code.
+- Next.js server-only env vars (like `CLERK_SECRET_KEY`, `MONGODB_URI`) must NOT have the `NEXT_PUBLIC_` prefix.
+- Always use `expo-secure-store` for Clerk's token cache in the mobile app.
+- All database operations from mobile go through the Next.js API — never call MongoDB from mobile directly.
