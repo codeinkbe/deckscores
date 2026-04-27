@@ -1,98 +1,116 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Screen } from '@/components/ui/screen';
+import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
+import { useProfile } from '@/hooks/use-profile';
+import { ProfielSetupGate } from '@/components/profiel-setup-gate';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { profile, loading, error } = useProfile();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  if (loading) {
+    return (
+      <Screen>
+        <View style={styles.center}>
+          <ActivityIndicator color={Palette.blueDark} size="large" />
+        </View>
+      </Screen>
+    );
+  }
+
+  if (!profile) return <ProfielSetupGate />;
+
+  return (
+    <Screen scroll>
+      <Text style={styles.greeting}>Hoi {profile.first_name}</Text>
+
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <Pressable
+        accessibilityRole="button"
+        style={({ pressed }) => [styles.bigButton, pressed && styles.bigButtonPressed]}
+        onPress={() => router.push('/boompje/new')}
+      >
+        <Ionicons name="add" size={72} color={Palette.white} />
+        <Text style={styles.bigButtonLabel}>Nieuw Boompje</Text>
+      </Pressable>
+
+      <View style={styles.menu}>
+        <MenuItem
+          icon="leaf-outline"
+          label="Open Boom"
+          onPress={() => router.push('/(tabs)/boompjes')}
+        />
+        <MenuItem
+          icon="book-outline"
+          label="Spelregels"
+          onPress={() => router.push('/spelregels')}
+        />
+        <MenuItem icon="bar-chart-outline" label="Statistieken" disabled />
+        <MenuItem icon="settings-outline" label="Instellingen" disabled />
+      </View>
+    </Screen>
+  );
+}
+
+type MenuItemProps = {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress?: () => void;
+  disabled?: boolean;
+};
+
+function MenuItem({ icon, label, onPress, disabled }: MenuItemProps) {
+  return (
+    <Pressable
+      onPress={disabled ? undefined : onPress}
+      style={({ pressed }) => [
+        styles.menuItem,
+        disabled && styles.menuItemDisabled,
+        pressed && !disabled && styles.menuItemPressed,
+      ]}
+    >
+      <Ionicons name={icon} size={22} color={disabled ? Palette.greyMid : Palette.blueDark} />
+      <Text style={[styles.menuLabel, disabled && styles.menuLabelDisabled]}>{label}</Text>
+      {disabled ? <Text style={styles.soonBadge}>binnenkort</Text> : null}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  greeting: { ...Typography.heading, color: Palette.blueDark, marginBottom: Spacing.xs },
+  error: { color: Palette.redAction },
+  bigButton: {
+    backgroundColor: Palette.blueDark,
+    borderRadius: Radius.lg,
+    paddingVertical: Spacing.xxl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
+  },
+  bigButtonPressed: { opacity: 0.85 },
+  bigButtonLabel: { color: Palette.white, fontSize: 22, fontWeight: '700' },
+  menu: { gap: Spacing.sm, marginTop: Spacing.xl },
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.md,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.md,
+    backgroundColor: Palette.greyVeryLight,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  menuItemPressed: { backgroundColor: Palette.blueLight },
+  menuItemDisabled: { opacity: 0.55 },
+  menuLabel: { ...Typography.bodyBold, color: Palette.blueDark, flex: 1 },
+  menuLabelDisabled: { color: Palette.greyDark },
+  soonBadge: {
+    color: Palette.greyMid,
+    fontSize: 12,
+    fontStyle: 'italic',
   },
 });

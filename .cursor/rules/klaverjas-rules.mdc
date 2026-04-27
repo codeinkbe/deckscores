@@ -1,0 +1,115 @@
+---
+description: Klaverjas spelregels, kaartwaarden, puntentelling, varianten en seinen. Domeinkennis voor het correct implementeren van game logic, scoring en UI van de boompje/giffie features.
+globs: packages/shared/src/klaverjas/**, packages/shared/src/types/boompje.ts, packages/shared/src/types/giffie.ts, packages/shared/src/types/player.ts, apps/mobile/components/boompje/**, apps/mobile/app/boompje/**, apps/mobile/stores/use-active-boompje.ts, apps/mobile/hooks/use-boompjes.ts, apps/web/app/api/boompjes/**, apps/web/lib/models/boompje.model.ts
+alwaysApply: false
+---
+
+# Klaverjas Spelregels
+
+Domeinkennis voor klaverjassen. Gebruik deze terminologie consistent in code, types, UI labels en API contracts (in het Nederlands, lowercase voor identifiers: `troef`, `roem`, `nat`, `pit`, `stuk`, `boompje`, `giffie`, `maat`).
+
+## Basis
+
+- 4 spelers, 2 paren (maten zitten tegenover elkaar). Klokwijs spelen.
+- Piketkaarten: 32 kaarten (7 t/m aas) in 4 kleuren: `klaveren`, `harten`, `ruiten`, `schoppen`.
+- Iedere speler krijgt 8 kaarten (delen 3-2-3 of 4-4).
+- Een **boompje** = 16 spellen (elke speler deelt 4×). Alternatief: spelen tot 1500 punten.
+- Een **giffie** = één gespeeld spel binnen een boompje (16 giffies per boompje).
+
+## Kaartwaarden & rangorde
+
+| Rang | Troef                | Niet-troef       |
+| ---- | -------------------- | ---------------- |
+| 1    | Boer (jas) — **20**  | Aas — **11**     |
+| 2    | Negen (nel) — **14** | Tien — **10**    |
+| 3    | Aas — **11**         | Heer — **4**     |
+| 4    | Tien — **10**        | Vrouw — **3**    |
+| 5    | Heer — **4**         | Boer — **2**     |
+| 6    | Vrouw — **3**        | Negen — **0**    |
+| 7    | Acht — **0**         | Acht — **0**     |
+| 8    | Zeven — **0**        | Zeven — **0**    |
+
+- Totaal **162 punten** per giffie: 62 troef + 3×30 niet-troef + **10 voor laatste slag**.
+- Voor **roem-volgorde** (drie/vierkaart) geldt de standaardvolgorde: A-H-V-B-10-9-8-7 (NIET de klaverjas-rangorde).
+
+## Roem (extra punten in één slag)
+
+| Combinatie                               | Roem    |
+| ---------------------------------------- | ------- |
+| Driekaart (3 op rij, zelfde kleur)       | 20      |
+| Vierkaart (4 op rij, zelfde kleur)       | 50      |
+| Vier gelijken (A, 10, H, V)              | 100     |
+| **Vier boeren**                          | **200** |
+| Stuk (Heer + Vrouw van troef)            | 20      |
+| Pit (alle slagen, zelf troef)            | +100    |
+| Tegenpit (alle slagen, tegenstander troef) | varieert per regio (vaak +100) |
+
+- Bij driekaart/vierkaart waar **stuk** in zit → **optellen** (bv. 20 + 20 = 40, of 50 + 20 = 70).
+- Stuk telt **altijd** en is nooit af te keuren.
+
+## Nat (beet)
+
+- Spelende partij moet **> 81 punten** (incl. roem) halen, dus strikt méér dan de helft van 162.
+- Bij gelijk of minder → spelende partij is **nat**: krijgt 0 punten, tegenpartij krijgt **162 + alle roem (van beide partijen)**.
+- Bij hoger bod (Leids, zie onder): nat-grens schuift mee (82 → 92 → 102 …).
+
+## Troefplicht (Amsterdams vs Rotterdams)
+
+**Amsterdams**: hoeft niet in/over te troeven als de slag al **voor de maat** ligt.
+**Rotterdams**: moet altijd in/overtroeven bij niet kunnen bekennen.
+
+Bij **niet-troef gevraagd**:
+
+| Prio | Amsterdams                                      | Rotterdams         |
+| ---- | ----------------------------------------------- | ------------------ |
+| 1    | Kleur bekennen                                  | Kleur bekennen     |
+| 2    | In/overtroeven (mag overslaan als slag voor maat) | In/overtroeven     |
+| 3    | Anders spelen                                   | Ondertroeven       |
+| 4    | Ondertroeven                                    | Anders spelen      |
+
+Bij **troef gevraagd** (gelijk in beide varianten):
+
+1. Bekennen en overtroeven
+2. Bekennen en ondertroeven
+3. Anders spelen
+
+## Bied-varianten
+
+- **Klassiek (gedraaid)**: troefkaart wordt omgedraaid; spelers zeggen `pas` of `speel` (linksom vanaf deler).
+- **Verplicht spelen / Utrechts**: voorhand kiest verplicht troef en komt uit.
+- **Leids**: bieden zoals bridge (schoppen > harten > ruiten > klaveren). Bod 2+ verhoogt nat-grens met 10 per niveau. Bonus vanaf 4-niveau (100 pt), 6-7 (150), 8-9 (200). **Strik** = +100 voor tegenpartij als spelende partij nat gaat; **dubbele strik** = +200. Onterechte strik kost -100. Laatste slag met **niet-troef 7** = +200.
+- **Verplichte draai**: na rondpassen speelt de speler "ervoor" (naast deler) op de eerstvolgende draaikaart.
+
+## Variant-modifiers
+
+- **Roem in de hand**: melden bij 1e slag, uiterlijk vóór 2e slag. Alleen koppel met **hoogste individuele roem** krijgt de roem; tegenpartij krijgt niets. Vijf-/zes-/zevenkaart = 100 (lager dan 4 gelijken). Stuk uitgezonderd (tot uitspelen laatste van de 2).
+- **Kraken / contra**: tegenpartij verdubbelt de inzet. Re/superkraak → ×4 / ×8. Spelende partij speelt voor `(162 + roem) × multiplier`. Volgorde: kraak → rekraak → superkraak.
+- **Schoppen dubbel**: als schoppen troef → alle puntenwaarden ×2 (roem niet).
+- **Pit**: alle slagen door spelende partij → +100 roem.
+
+## Verzaken (fouten)
+
+Mogelijke fouten: niet bekennen, niet troeven, ondertroeven terwijl hoger kan, etc.
+Sanctie afhankelijk van afspraak: spel verloren, óf nat + 100 strafpunten = **262 tegen**.
+
+> Bekennen weegt **zwaarder** dan het verbod op ondertroeven: bij troef gevraagd moet je bekennen, ook als je alleen kan ondertroeven.
+
+## Seinen (conventies)
+
+- **Kleine kaart (7-9) bijspelen** in andere kleur → "ik heb het aas / wil deze kleur".
+- **Plaatje (10/H/V/B) bijspelen** → "ik heb niets/weinig in deze kleur".
+- **Aas seinen** (bij sterk bezit zoals A-10-H-8) → "ik kan deze kleur oprapen".
+- **Kleintje boer**: uitkomen met niet-troef 7/8/9 → "ik heb de troefboer, speel troef terug (liefst V of 10)".
+- **Kleintje boer, kleintje terug**: maat reageert met ander niet-troefkleintje → "ik heb kale nel, speel troef terug (geen boer)".
+- **Boer over boer**: uitkomen met niet-troef boer → "ik heb troefboer + alleen kleine troeven".
+- **Gevaarlijke hand**: tegenstander rechts van vermoedelijke boer-bezitter; kan speculatief troef 10 spelen om B-10-9 te vangen.
+- **Tegenkleur seinen**: harten sein = wil ruiten; klaver sein = wil schoppen. Behoudt lange kaart voor pit.
+
+## Implementatie-richtlijnen
+
+- Modelleer een **giffie** met: `troefKleur`, `troefMaker` (speler/team), `variant` (Amsterdams/Rotterdams + bied-variant), `puntenTeamA`, `puntenTeamB`, `roemTeamA`, `roemTeamB`, `pit`, `nat`, eventueel `kraak`/`strik` modifiers.
+- Bereken **eindpunten per giffie** server-side / in shared logic — nooit duplicaat in mobile + web.
+- Valideer: `puntenTeamA + puntenTeamB === 162` (voor roem) en `roem` apart bijhouden.
+- Bepaal `nat` op basis van: `troefMakerPunten + troefMakerRoem <= 81 + (biedNiveau - 1) * 10`.
+- Plaats pure scoring functions in `packages/shared/src/klaverjas/score.ts`.
+- Plaats kaart-constanten en rangordes in `packages/shared/src/klaverjas/cards.ts`.
