@@ -7,6 +7,11 @@
     },
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "MONGODB_URI",
+        "CLERK_SECRET_KEY",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
