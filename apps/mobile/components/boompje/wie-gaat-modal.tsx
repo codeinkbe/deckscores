@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Boompje, NumPlayers, Player, Seat, Troef } from '@cardapp/shared';
-import { ALL_TROEVEN } from '@cardapp/shared';
+import type { Boompje, NumPlayers, Player, Seat, Troef } from '@deckscores/shared';
+import { ALL_TROEVEN } from '@deckscores/shared';
 import { TROEF_COLOR, TROEF_LABEL } from '@/constants/troef';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';

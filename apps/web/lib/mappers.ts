@@ -6,7 +6,7 @@ import type {
   Player,
   Profile,
   ScoreBucket,
-} from '@cardapp/shared';
+} from '@deckscores/shared';
 import type { BoompjeDoc } from './models/boompje.model';
 import type { ProfileDoc } from './models/profile.model';
 

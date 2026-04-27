@@ -1,4 +1,4 @@
-import type { Boompje } from '@cardapp/shared';
+import type { Boompje } from '@deckscores/shared';
 import { create } from 'zustand';
 
 type State = {

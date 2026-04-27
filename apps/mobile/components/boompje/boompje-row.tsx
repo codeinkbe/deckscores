@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Boompje } from '@cardapp/shared';
+import type { Boompje } from '@deckscores/shared';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {

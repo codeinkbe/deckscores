@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { AddGiffieInput, Boompje, Seat, Troef } from '@cardapp/shared';
+import type { AddGiffieInput, Boompje, Seat, Troef } from '@deckscores/shared';
 import { BoompjeSummary } from '@/components/boompje/boompje-summary';
 import { GiffieInputModal, type SubmitInput } from '@/components/boompje/giffie-input-modal';
 import { GiffiesTable } from '@/components/boompje/giffies-table';

@@ -9,8 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { Boompje, ScoreBucket, Troef } from '@cardapp/shared';
-import { bucketForSeat, calculateGiffie, TOTAAL_PUNTEN_PER_GIFFIE } from '@cardapp/shared';
+import type { Boompje, ScoreBucket, Troef } from '@deckscores/shared';
+import { bucketForSeat, calculateGiffie, TOTAAL_PUNTEN_PER_GIFFIE } from '@deckscores/shared';
 import { TROEF_COLOR, TROEF_LABEL, TROEF_NAME } from '@/constants/troef';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Telhulp } from '@/components/boompje/telhulp';

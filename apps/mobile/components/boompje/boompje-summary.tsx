@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import type { Boompje, Player, Seat } from '@cardapp/shared';
-import { ALL_TROEVEN } from '@cardapp/shared';
+import type { Boompje, Player, Seat } from '@deckscores/shared';
+import { ALL_TROEVEN } from '@deckscores/shared';
 import { TROEF_COLOR, TROEF_LABEL, TROEF_NAME } from '@/constants/troef';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 

@@ -12,7 +12,7 @@ export default function Home() {
         padding: '2rem',
       }}
     >
-      <h1 style={{ fontSize: '3rem', fontWeight: 700, margin: 0 }}>CardApp</h1>
+      <h1 style={{ fontSize: '3rem', fontWeight: 700, margin: 0 }}>DeckScores</h1>
       <p style={{ fontSize: '1.25rem', color: '#666', margin: 0 }}>
         Keep score for your card games
       </p>

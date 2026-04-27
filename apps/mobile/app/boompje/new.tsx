@@ -13,7 +13,7 @@ import {
   type Participant,
   type Player,
   type Seat,
-} from '@cardapp/shared';
+} from '@deckscores/shared';
 import { FormatToggle } from '@/components/boompje/format-toggle';
 import { SpelInstellingenModal } from '@/components/boompje/spel-instellingen-modal';
 import { SpelersCross } from '@/components/boompje/spelers-cross';

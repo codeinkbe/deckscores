@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { Player, ProfileSearchResult } from '@cardapp/shared';
+import type { Player, ProfileSearchResult } from '@deckscores/shared';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { KlaverjasInput } from '@/components/ui/klaverjas-input';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';

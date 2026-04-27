@@ -4,7 +4,7 @@ import type {
   BoompjeStatus,
   NumPlayers,
   Op16eActie,
-} from '@cardapp/shared';
+} from '@deckscores/shared';
 
 type PlayerDoc = {
   kind: 'account' | 'guest';

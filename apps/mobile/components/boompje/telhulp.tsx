@@ -7,7 +7,7 @@ import {
   NORMAAL_VALUES,
   TROEF_VALUES,
   calculateTelhulpPunten,
-} from '@cardapp/shared';
+} from '@deckscores/shared';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 

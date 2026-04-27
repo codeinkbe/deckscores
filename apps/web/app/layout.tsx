@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
-  title: 'CardApp',
+  title: 'DeckScores',
   description: 'Keep score for your card games',
 };
 

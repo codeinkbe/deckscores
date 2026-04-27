@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { BoompjeStatus } from '@cardapp/shared';
+import type { BoompjeStatus } from '@deckscores/shared';
 import { BoompjeRow } from '@/components/boompje/boompje-row';
 import { Screen } from '@/components/ui/screen';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';

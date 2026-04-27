@@ -1,4 +1,4 @@
-import type { Troef } from '@cardapp/shared';
+import type { Troef } from '@deckscores/shared';
 import { Palette } from './theme';
 
 export const TROEF_LABEL: Record<Troef, string> = {

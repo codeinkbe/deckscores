@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Boompje, BoompjeStatus } from '@cardapp/shared';
+import type { Boompje, BoompjeStatus } from '@deckscores/shared';
 import { useApi } from '@/lib/api';
 
 type Response = { boompjes: Boompje[] };

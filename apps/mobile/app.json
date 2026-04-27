@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "cardapp",
-    "slug": "cardapp",
+    "name": "DeckScores",
+    "slug": "deckscores",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "cardapp",
+    "scheme": "deckscores",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,

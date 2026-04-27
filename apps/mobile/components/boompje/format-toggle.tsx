@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { BoompjeFormat, Op16eActie } from '@cardapp/shared';
+import type { BoompjeFormat, Op16eActie } from '@deckscores/shared';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 

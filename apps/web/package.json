@@ -1,5 +1,5 @@
 {
-  "name": "@cardapp/web",
+  "name": "@deckscores/web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cardapp/shared": "workspace:^",
+    "@deckscores/shared": "workspace:^",
     "@clerk/nextjs": "^7.2.3",
     "mongoose": "^9.5.0",
     "next": "latest",

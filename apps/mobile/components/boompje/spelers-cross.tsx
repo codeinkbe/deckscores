@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { NumPlayers, Player, Seat } from '@cardapp/shared';
+import type { NumPlayers, Player, Seat } from '@deckscores/shared';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {

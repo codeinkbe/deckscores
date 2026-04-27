@@ -1,5 +1,5 @@
 {
-  "name": "@cardapp/mobile",
+  "name": "@deckscores/mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -12,7 +12,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@cardapp/shared": "workspace:^",
+    "@deckscores/shared": "workspace:^",
     "@clerk/expo": "^3.2.1",
     "@expo/metro-runtime": "~55.0.10",
     "@expo/vector-icons": "^15.0.3",

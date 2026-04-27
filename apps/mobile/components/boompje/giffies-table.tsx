@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Boompje, Giffie, ScoreBucket } from '@cardapp/shared';
+import type { Boompje, Giffie, ScoreBucket } from '@deckscores/shared';
 import { TROEF_COLOR, TROEF_LABEL } from '@/constants/troef';
 import { Palette, Spacing, Typography } from '@/constants/theme';
 

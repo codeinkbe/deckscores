@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { BoompjeModel } from '@/lib/models/boompje.model';
 import { mapBoompje } from '@/lib/mappers';
 import { requireUser, UnauthorizedError, unauthorizedResponse } from '@/lib/auth';
-import { emptyTotals, type CreateBoompjeInput } from '@cardapp/shared';
+import { emptyTotals, type CreateBoompjeInput } from '@deckscores/shared';
 
 export async function GET(request: NextRequest) {
   try {

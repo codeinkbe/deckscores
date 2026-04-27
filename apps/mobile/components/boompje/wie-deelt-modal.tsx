@@ -1,5 +1,5 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { NumPlayers, Player, Seat } from '@cardapp/shared';
+import type { NumPlayers, Player, Seat } from '@deckscores/shared';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 

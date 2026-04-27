@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ProfileModel } from '@/lib/models/profile.model';
 import { requireUser, UnauthorizedError, unauthorizedResponse } from '@/lib/auth';
-import type { ProfileSearchResult } from '@cardapp/shared';
+import type { ProfileSearchResult } from '@deckscores/shared';
 
 export async function GET(request: NextRequest) {
   try {

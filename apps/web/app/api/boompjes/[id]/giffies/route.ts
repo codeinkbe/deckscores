@@ -8,7 +8,7 @@ import {
   isBoompjeFinished,
   sumGiffies,
   type AddGiffieInput,
-} from '@cardapp/shared';
+} from '@deckscores/shared';
 
 type Params = { params: Promise<{ id: string }> };
 

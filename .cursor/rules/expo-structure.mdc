@@ -8,7 +8,7 @@ alwaysApply: true
 This project is a Turborepo monorepo. The Expo mobile app lives in `apps/mobile/`.
 
 ```
-cardapp/                        → Monorepo root
+deckscores/                     → Monorepo root
   apps/
     mobile/                     → Expo app
       app/                      → Expo Router screens (file-based routing)

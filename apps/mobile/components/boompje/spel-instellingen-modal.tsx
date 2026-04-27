@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
-import type { BoompjeSettings, NumPlayers, Op16eActie } from '@cardapp/shared';
+import type { BoompjeSettings, NumPlayers, Op16eActie } from '@deckscores/shared';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 

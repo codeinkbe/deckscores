@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Boompje, ScoreBucket } from '@cardapp/shared';
+import type { Boompje, ScoreBucket } from '@deckscores/shared';
 import { Palette, Spacing, Typography } from '@/constants/theme';
 
 type Props = {

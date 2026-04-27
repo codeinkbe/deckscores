@@ -1,6 +1,6 @@
 import { useAuth, useUser } from '@clerk/expo';
 import { useCallback, useEffect, useState } from 'react';
-import type { Profile } from '@cardapp/shared';
+import type { Profile } from '@deckscores/shared';
 import { useApi } from '@/lib/api';
 
 type ProfileResponse = { profile: Profile | null };
