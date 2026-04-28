@@ -2,6 +2,7 @@ import { useAuth } from '@clerk/expo';
 import { useCallback, useMemo, useRef } from 'react';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const REQUEST_TIMEOUT_MS = 15000;
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -36,22 +37,35 @@ export function useApi(): ApiClient {
         }
       }
 
-      const response = await fetch(url.toString(), {
-        method: options.method ?? 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-      if (!response.ok) {
-        const text = await response.text();
-        throw new ApiError(response.status, text || response.statusText);
+      try {
+        const response = await fetch(url.toString(), {
+          method: options.method ?? 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: options.body ? JSON.stringify(options.body) : undefined,
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new ApiError(response.status, text || response.statusText);
+        }
+
+        if (response.status === 204) return undefined as T;
+        return (await response.json()) as T;
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw new ApiError(408, 'Verzoek duurde te lang. Probeer opnieuw.');
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeout);
       }
-
-      if (response.status === 204) return undefined as T;
-      return (await response.json()) as T;
     },
     [],
   );

@@ -1,16 +1,18 @@
 import { useAuth } from '@clerk/expo';
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
-import { Palette } from '@/constants/theme';
+import { Colors, Palette } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
+import { useProfile } from '@/hooks/use-profile';
 
 export default function TabsLayout() {
   const { isSignedIn, isLoaded } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const scheme = useColorScheme();
 
-  if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
+  if (!isLoaded || (isSignedIn && profileLoading)) return null;
+  if (!isSignedIn) return <Redirect href="/" />;
+  if (!profile) return <Redirect href="/profiel-setup" />;
 
   const palette = Colors[scheme === 'dark' ? 'dark' : 'light'];
 

@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "be.codeink.deckscores"
+      "bundleIdentifier": "be.codeink.deckscores",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "be.codeink.deckscores",
@@ -49,6 +52,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bea147f2-4c21-4ade-ae70-7f2881296804"
+      }
+    },
+    "owner": "codeink"
   }
 }

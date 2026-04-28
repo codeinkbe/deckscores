@@ -4,13 +4,12 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Screen } from '@/components/ui/screen';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 import { useProfile } from '@/hooks/use-profile';
-import { ProfielSetupGate } from '@/components/profiel-setup-gate';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { profile, loading, error } = useProfile();
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <Screen>
         <View style={styles.center}>
@@ -19,8 +18,6 @@ export default function HomeScreen() {
       </Screen>
     );
   }
-
-  if (!profile) return <ProfielSetupGate />;
 
   return (
     <Screen scroll>

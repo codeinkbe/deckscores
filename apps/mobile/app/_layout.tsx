@@ -16,7 +16,7 @@ if (!publishableKey) {
 }
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: 'index',
 };
 
 export default function RootLayout() {
@@ -27,8 +27,10 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fff' } }}>
+            <Stack.Screen name="index" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)" />
+            <Stack.Screen name="profiel-setup" />
             <Stack.Screen name="boompje" />
             <Stack.Screen
               name="spelregels"
