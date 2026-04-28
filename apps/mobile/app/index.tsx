@@ -1,28 +1,19 @@
 import { useAuth } from '@clerk/expo';
-import { Redirect, useRouter } from 'expo-router';
-import { ActivityIndicator, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 const FOOTER_OVERLAY_OPACITY = 0.55;
 
 export default function WelcomeScreen() {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isLoaded } = useAuth();
   const router = useRouter();
 
-  if (!isLoaded) {
-    return (
-      <SafeAreaView style={[styles.safeArea, styles.loadingWrapper]} edges={['top', 'bottom', 'left', 'right']}>
-        <ActivityIndicator color={Palette.blueDark} size="large" />
-      </SafeAreaView>
-    );
-  }
-
-  if (isSignedIn) {
-    return <Redirect href="/(tabs)" />;
-  }
+  if (!isLoaded) return <LoadingScreen />;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
@@ -63,11 +54,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: Palette.blueDark,
-  },
-  loadingWrapper: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Palette.white,
   },
   background: {
     flex: 1,

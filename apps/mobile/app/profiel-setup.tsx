@@ -36,11 +36,6 @@ export default function ProfielSetupScreen() {
     form.last_name.trim().length > 0 &&
     form.member_number.trim().length > 0;
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace('/');
-  };
-
   const handleSubmit = async () => {
     if (!isValid) return;
 
@@ -68,7 +63,7 @@ export default function ProfielSetupScreen() {
           accessibilityRole="button"
           accessibilityLabel="Uitloggen"
           hitSlop={Spacing.sm}
-          onPress={handleSignOut}
+          onPress={() => void signOut()}
           style={({ pressed }) => [
             styles.logoutButton,
             pressed && styles.logoutButtonPressed,

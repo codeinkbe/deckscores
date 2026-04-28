@@ -1,4 +1,4 @@
-import { ClerkProvider } from '@clerk/expo';
+import { ClerkProvider, useAuth } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
@@ -15,10 +15,6 @@ if (!publishableKey) {
   throw new Error('Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your .env file');
 }
 
-export const unstable_settings = {
-  anchor: 'index',
-};
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -26,26 +22,38 @@ export default function RootLayout() {
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <SafeAreaProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fff' } }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="profiel-setup" />
-            <Stack.Screen name="boompje" />
-            <Stack.Screen
-              name="spelregels"
-              options={{
-                headerShown: true,
-                title: 'Spelregels',
-                headerTintColor: Palette.blueDark,
-                headerStyle: { backgroundColor: Palette.white },
-                headerBackTitle: 'Terug',
-              }}
-            />
-          </Stack>
+          <RootNavigator />
           <StatusBar style="auto" />
         </ThemeProvider>
       </SafeAreaProvider>
     </ClerkProvider>
+  );
+}
+
+function RootNavigator() {
+  const { isSignedIn } = useAuth();
+
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fff' } }}>
+      <Stack.Protected guard={!isSignedIn}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!isSignedIn}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="profiel-setup" />
+        <Stack.Screen name="boompje" />
+        <Stack.Screen
+          name="spelregels"
+          options={{
+            headerShown: true,
+            title: 'Spelregels',
+            headerTintColor: Palette.blueDark,
+            headerStyle: { backgroundColor: Palette.white },
+            headerBackTitle: 'Terug',
+          }}
+        />
+      </Stack.Protected>
+    </Stack>
   );
 }

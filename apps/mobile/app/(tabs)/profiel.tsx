@@ -93,7 +93,7 @@ export default function ProfielScreen() {
         label="Uitloggen"
         variant="outline"
         fullWidth
-        onPress={() => signOut()}
+        onPress={() => void signOut()}
       />
     </Screen>
   );
