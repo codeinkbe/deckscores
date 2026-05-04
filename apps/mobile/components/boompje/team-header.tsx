@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Boompje, ScoreBucket } from '@deckscores/shared';
+import { displayScore } from '@deckscores/shared';
 import { Palette, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -8,7 +9,7 @@ type Props = {
 };
 
 export function TeamHeader({ boompje }: Props) {
-  const [showNames, setShowNames] = useState(true);
+  const [showNames, setShowNames] = useState(false);
   const toggle = () => setShowNames((v) => !v);
 
   return (
@@ -19,7 +20,10 @@ export function TeamHeader({ boompje }: Props) {
           <BucketColumn
             label={bucket.label}
             names={namesForBucket(boompje, bucket)}
-            score={boompje.totals[bucket.id] ?? 0}
+            score={displayScore(boompje.totals[bucket.id] ?? 0, {
+              afronden: boompje.settings.afronden,
+              format: boompje.format,
+            })}
             showNames={showNames}
             onToggle={toggle}
           />
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
   },
   col: { flex: 1, alignItems: 'center', paddingHorizontal: Spacing.sm, gap: Spacing.xs },
   divider: { width: 2, backgroundColor: Palette.blueDark },
-  label: { fontSize: 28, fontWeight: '700', color: Palette.blueDark },
+  label: { fontSize: 26, fontWeight: '700', color: Palette.blueDark, letterSpacing: 1 },
   nameStack: { alignItems: 'center' },
   name: { ...Typography.bodyBold, color: Palette.blueDark },
   score: { fontSize: 36, fontWeight: '700', color: Palette.blueDark },

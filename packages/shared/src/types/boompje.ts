@@ -31,6 +31,7 @@ export type BoompjeTotals = Record<string, number>;
 
 export type Boompje = {
   id: string;
+  group_id: string;
   owner_clerk_id: string;
   format: BoompjeFormat;
   settings: BoompjeSettings;
@@ -45,6 +46,7 @@ export type Boompje = {
 };
 
 export type CreateBoompjeInput = {
+  group_id: string;
   format: BoompjeFormat;
   settings: BoompjeSettings;
   participants: Participant[];

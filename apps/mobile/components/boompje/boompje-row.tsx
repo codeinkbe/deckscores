@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Boompje } from '@deckscores/shared';
+import { displayScore } from '@deckscores/shared';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -33,7 +34,12 @@ export function BoompjeRow({ boompje, onPress }: Props) {
           <Text style={styles.scoreLabel} numberOfLines={1}>
             {shortLabel(bucket.label)}
           </Text>
-          <Text style={styles.scoreValue}>{boompje.totals[bucket.id] ?? 0}</Text>
+          <Text style={styles.scoreValue}>
+            {displayScore(boompje.totals[bucket.id] ?? 0, {
+              afronden: boompje.settings.afronden,
+              format: boompje.format,
+            })}
+          </Text>
         </View>
       ))}
       {boompje.status === 'finished' && winner ? (

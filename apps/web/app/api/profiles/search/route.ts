@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const regex = new RegExp(escapeRegex(q), 'i');
     const docs = await ProfileModel.find({
       clerk_id: { $ne: me.clerk_id },
-      $or: [{ first_name: regex }, { last_name: regex }, { member_number: regex }],
+      $or: [{ first_name: regex }, { last_name: regex }],
     })
       .limit(10)
       .lean();
@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       clerk_id: d.clerk_id,
       first_name: d.first_name,
       last_name: d.last_name,
-      member_number: d.member_number,
     }));
 
     return Response.json({ results });

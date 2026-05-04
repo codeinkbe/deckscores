@@ -33,10 +33,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="boompjes"
+        name="groepen"
         options={{
-          title: 'Boompjes',
-          tabBarIcon: ({ color, size }) => <Ionicons name="leaf" size={size} color={color} />,
+          title: 'Groepen',
+          tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
         }}
       />
       <Tabs.Screen

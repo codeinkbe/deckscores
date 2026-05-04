@@ -9,12 +9,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { AddGiffieInput, Boompje, Seat, Troef } from '@deckscores/shared';
+import type { AddGiffieInput, Boompje } from '@deckscores/shared';
 import { BoompjeSummary } from '@/components/boompje/boompje-summary';
 import { GiffieInputModal, type SubmitInput } from '@/components/boompje/giffie-input-modal';
 import { GiffiesTable } from '@/components/boompje/giffies-table';
 import { TeamHeader } from '@/components/boompje/team-header';
-import { WieGaatModal } from '@/components/boompje/wie-gaat-modal';
 import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Screen } from '@/components/ui/screen';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
@@ -27,9 +26,7 @@ export default function BoompjeDetail() {
   const api = useApi();
   const { boompje, loading, error, setBoompje, setLoading, setError, clear } = useActiveBoompje();
 
-  const [wieGaatOpen, setWieGaatOpen] = useState(false);
-  const [pendingSeat, setPendingSeat] = useState<Seat | null>(null);
-  const [pendingTroef, setPendingTroef] = useState<Troef | null>(null);
+  const [scoreSheetOpen, setScoreSheetOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const fetchBoompje = useCallback(async () => {
@@ -50,20 +47,14 @@ export default function BoompjeDetail() {
     return () => clear();
   }, [fetchBoompje, clear]);
 
-  const handleConfirmWieGaat = (seat: Seat, troef: Troef) => {
-    setPendingSeat(seat);
-    setPendingTroef(troef);
-    setWieGaatOpen(false);
-  };
-
   const handleSubmitGiffie = async (input: SubmitInput) => {
-    if (!boompje || pendingSeat === null || !pendingTroef) return;
+    if (!boompje) return;
     setSaving(true);
     setError(null);
     try {
       const body: AddGiffieInput = {
-        gegaan_seat: pendingSeat,
-        troef: pendingTroef,
+        gegaan_seat: input.gegaan_seat,
+        troef: input.troef,
         raw_scores: input.raw_scores,
         pit: input.pit,
         verzaakt: input.verzaakt,
@@ -73,8 +64,7 @@ export default function BoompjeDetail() {
         { method: 'POST', body },
       );
       setBoompje(updated);
-      setPendingSeat(null);
-      setPendingTroef(null);
+      setScoreSheetOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Opslaan mislukt');
     } finally {
@@ -134,42 +124,32 @@ export default function BoompjeDetail() {
             variant="success"
             size="lg"
             fullWidth
-            onPress={() => setWieGaatOpen(true)}
+            onPress={() => setScoreSheetOpen(true)}
           />
         </View>
       ) : (
         <View style={styles.bottomBar}>
           <KlaverjasButton
-            label="Naar boompjes"
+            label="Terug naar groep"
             variant="primary"
             size="lg"
             fullWidth
-            onPress={() => router.replace('/(tabs)/boompjes')}
+            onPress={() =>
+              boompje.group_id
+                ? router.replace(`/groep/${boompje.group_id}`)
+                : router.replace('/(tabs)/groepen')
+            }
           />
         </View>
       )}
 
-      <WieGaatModal
-        visible={wieGaatOpen}
+      <GiffieInputModal
+        visible={scoreSheetOpen}
         boompje={boompje}
-        onClose={() => setWieGaatOpen(false)}
-        onConfirm={handleConfirmWieGaat}
+        saving={saving}
+        onClose={() => setScoreSheetOpen(false)}
+        onSubmit={handleSubmitGiffie}
       />
-
-      {pendingSeat !== null && pendingTroef ? (
-        <GiffieInputModal
-          visible={pendingSeat !== null && pendingTroef !== null}
-          boompje={boompje}
-          gegaanSeat={pendingSeat}
-          troef={pendingTroef}
-          saving={saving}
-          onClose={() => {
-            setPendingSeat(null);
-            setPendingTroef(null);
-          }}
-          onSubmit={handleSubmitGiffie}
-        />
-      ) : null}
     </Screen>
   );
 }

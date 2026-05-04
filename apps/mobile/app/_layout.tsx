@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
+import { KeyboardDoneAccessory } from '@/components/ui/keyboard-done-accessory';
 import { Palette } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -24,6 +25,7 @@ export default function RootLayout() {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <RootNavigator />
           <StatusBar style="auto" />
+          <KeyboardDoneAccessory />
         </ThemeProvider>
       </SafeAreaProvider>
     </ClerkProvider>
@@ -43,6 +45,8 @@ function RootNavigator() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="profiel-setup" />
         <Stack.Screen name="boompje" />
+        <Stack.Screen name="groep" />
+        <Stack.Screen name="invite" />
         <Stack.Screen
           name="spelregels"
           options={{

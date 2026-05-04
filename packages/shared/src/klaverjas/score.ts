@@ -25,11 +25,6 @@ export type CalculatedGiffie = Omit<Giffie, 'number'> & {
   warnings: string[];
 };
 
-const roundToTen = (value: number) => Math.round(value / 10) * 10;
-
-const applyAfronden = (score: number, afronden: boolean) =>
-  afronden ? roundToTen(score) : score;
-
 const initEmptyScores = (
   buckets: ScoreBucket[],
 ): Record<string, BucketScore> =>
@@ -48,7 +43,6 @@ const sumRawField = (
 export const calculateGiffie = (
   input: GiffieDraftInput,
   buckets: ScoreBucket[],
-  options: { afronden: boolean },
 ): CalculatedGiffie => {
   const warnings: string[] = [];
   const gegaanBucket = bucketForSeat(buckets, input.gegaan_seat);
@@ -69,10 +63,7 @@ export const calculateGiffie = (
     const perWinnerRoem = totalRoem / winners.length;
     const scores = initEmptyScores(buckets);
     for (const winner of winners) {
-      scores[winner.id] = {
-        score: applyAfronden(perWinner, options.afronden),
-        roem: perWinnerRoem,
-      };
+      scores[winner.id] = { score: perWinner, roem: perWinnerRoem };
     }
     return {
       gegaan_seat: input.gegaan_seat,
@@ -103,10 +94,7 @@ export const calculateGiffie = (
   } else {
     for (const bucket of buckets) {
       const raw = input.raw_scores[bucket.id] ?? { punten: 0, roem: 0 };
-      scores[bucket.id] = {
-        score: raw.punten + raw.roem,
-        roem: raw.roem,
-      };
+      scores[bucket.id] = { score: raw.punten + raw.roem, roem: raw.roem };
     }
   }
 
@@ -114,13 +102,6 @@ export const calculateGiffie = (
     scores[input.pit] = {
       ...scores[input.pit],
       score: scores[input.pit].score + PIT_BONUS,
-    };
-  }
-
-  for (const bucket of buckets) {
-    scores[bucket.id] = {
-      ...scores[bucket.id],
-      score: applyAfronden(scores[bucket.id].score, options.afronden),
     };
   }
 
@@ -158,3 +139,16 @@ export const isBoompjeFinished = (
   const target = format === '1500_punten' ? 1500 : 1000;
   return Object.values(totals).some((value) => value >= target);
 };
+
+export const formatScaledOnly = (format: BoompjeFormat) => format === '16_giffies';
+
+export const displayScore = (
+  score: number,
+  options: { afronden: boolean; format: BoompjeFormat },
+): number => {
+  if (!options.afronden) return Math.round(score);
+  if (!formatScaledOnly(options.format)) return Math.round(score);
+  return Math.round(score / 10);
+};
+
+export const PUNTEN_TE_GAAN_DREMPEL = MAKEN_GRENS;

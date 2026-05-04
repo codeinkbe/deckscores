@@ -52,9 +52,10 @@ function CrossLayout({ seats, onTapSeat }: LayoutProps) {
 
       <View style={styles.row}>
         <SeatChip
-          editable={false}
-          label="Jij (jouw account)"
+          editable
+          label="Jij"
           player={seats[0]}
+          onPress={() => onTapSeat(0)}
           style={styles.center}
         />
       </View>
@@ -84,9 +85,10 @@ function TriangleLayout({ seats, onTapSeat }: LayoutProps) {
 
       <View style={styles.row}>
         <SeatChip
-          editable={false}
-          label="Jij (jouw account)"
+          editable
+          label="Jij"
           player={seats[0]}
+          onPress={() => onTapSeat(0)}
           style={styles.center}
         />
       </View>
@@ -109,9 +111,10 @@ function FaceOffLayout({ seats, onTapSeat }: LayoutProps) {
 
       <View style={styles.row}>
         <SeatChip
-          editable={false}
-          label="Jij (jouw account)"
+          editable
+          label="Jij"
           player={seats[0]}
+          onPress={() => onTapSeat(0)}
           style={styles.center}
         />
       </View>

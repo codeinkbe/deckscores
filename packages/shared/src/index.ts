@@ -1,4 +1,5 @@
 export * from './types/profile';
+export * from './types/group';
 export * from './types/player';
 export * from './types/giffie';
 export * from './types/boompje';

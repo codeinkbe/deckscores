@@ -36,43 +36,51 @@ export function SpelInstellingenModal({ visible, settings, onChange, onClose }: 
             </Pressable>
           </View>
 
-          <Row label="Afronden">
-            <Switch
-              value={settings.afronden}
-              onValueChange={setAfronden}
-              trackColor={{ true: Palette.greenSoft, false: Palette.greyLight }}
-              thumbColor={settings.afronden ? Palette.greenAction : Palette.white}
-            />
-          </Row>
+          <Section title="Score weergave">
+            <Row
+              label="Afronden"
+              hint="Toon scores op een schaal van 0 - 10 i.p.v. 0 - 162"
+            >
+              <Switch
+                value={settings.afronden}
+                onValueChange={setAfronden}
+                trackColor={{ true: Palette.blueLight, false: Palette.greyLight }}
+                thumbColor={settings.afronden ? Palette.blueDark : Palette.white}
+              />
+            </Row>
+          </Section>
 
-          <Row label="Deler aangeven">
-            <Switch
-              value={settings.deler_aangeven}
-              onValueChange={setDelerAangeven}
-              trackColor={{ true: Palette.greenSoft, false: Palette.greyLight }}
-              thumbColor={settings.deler_aangeven ? Palette.greenAction : Palette.redAction}
-            />
-          </Row>
+          <Section title="Deler">
+            <Row
+              label="Deler kiezen per giffie"
+              hint="Anders rouleert hij automatisch met de klok mee"
+            >
+              <Switch
+                value={settings.deler_aangeven}
+                onValueChange={setDelerAangeven}
+                trackColor={{ true: Palette.blueLight, false: Palette.greyLight }}
+                thumbColor={settings.deler_aangeven ? Palette.blueDark : Palette.white}
+              />
+            </Row>
+          </Section>
 
-          <View style={styles.makenDraaienBlock}>
-            <Text style={styles.helper}>Bij 16 Giffies:</Text>
+          <Section title="Bij 16 giffies">
             <View style={styles.makenDraaienRow}>
               <KlaverjasButton
                 label="Maken"
-                variant={settings.op_16e_actie === 'maken' ? 'success' : 'outline'}
+                variant={settings.op_16e_actie === 'maken' ? 'primary' : 'outline'}
                 onPress={() => setOp16e('maken')}
               />
-              <Text style={styles.helper}>Of</Text>
+              <Text style={styles.helper}>of</Text>
               <KlaverjasButton
                 label="Draaien"
-                variant={settings.op_16e_actie === 'draaien' ? 'danger' : 'outline'}
+                variant={settings.op_16e_actie === 'draaien' ? 'primary' : 'outline'}
                 onPress={() => setOp16e('draaien')}
               />
             </View>
-          </View>
+          </Section>
 
-          <View style={styles.spelersBlock}>
-            <Text style={styles.helper}>Aantal spelers:</Text>
+          <Section title="Aantal spelers">
             {NUM_PLAYER_OPTIONS.map((option) => (
               <SpelersOption
                 key={option.value}
@@ -84,19 +92,39 @@ export function SpelInstellingenModal({ visible, settings, onChange, onClose }: 
             <Text style={styles.note}>
               Wisselen reset de geselecteerde spelers en deler.
             </Text>
-          </View>
+          </Section>
 
-          <KlaverjasButton label="Klaar" variant="primary" fullWidth onPress={onClose} />
+          <KlaverjasButton label="Klaar" variant="success" fullWidth onPress={onClose} />
         </View>
       </View>
     </Modal>
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {children}
+    </View>
+  );
+}
+
+function Row({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
+      <View style={styles.rowText}>
+        <Text style={styles.rowLabel}>{label}</Text>
+        {hint ? <Text style={styles.rowHint}>{hint}</Text> : null}
+      </View>
       {children}
     </View>
   );
@@ -136,25 +164,35 @@ const styles = StyleSheet.create({
     borderTopRightRadius: Radius.lg,
     padding: Spacing.lg,
     gap: Spacing.lg,
+    maxHeight: '90%',
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { ...Typography.heading, color: Palette.blueDark },
+  section: { gap: Spacing.sm },
+  sectionTitle: {
+    ...Typography.label,
+    color: Palette.greyMid,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.sm,
+    gap: Spacing.md,
   },
+  rowText: { flex: 1, gap: 2 },
   rowLabel: { ...Typography.bodyBold, color: Palette.black },
-  helper: { color: Palette.greyDark },
+  rowHint: { color: Palette.greyMid, fontSize: 12 },
+  helper: { color: Palette.greyDark, fontWeight: '600' },
   note: { color: Palette.greyMid, fontSize: 12, fontStyle: 'italic' },
-  makenDraaienBlock: { gap: Spacing.sm },
   makenDraaienRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.lg,
+    justifyContent: 'center',
   },
-  spelersBlock: { gap: Spacing.sm, paddingTop: Spacing.md },
   spelersRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -171,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioSelected: { borderColor: Palette.greenAction },
-  radioInner: { width: 12, height: 12, borderRadius: 6, backgroundColor: Palette.greenAction },
+  radioSelected: { borderColor: Palette.blueDark },
+  radioInner: { width: 12, height: 12, borderRadius: 6, backgroundColor: Palette.blueDark },
   spelersLabel: { ...Typography.body, color: Palette.black },
 });

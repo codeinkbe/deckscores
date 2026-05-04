@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import type { Boompje, Player, Seat } from '@deckscores/shared';
-import { ALL_TROEVEN } from '@deckscores/shared';
+import { ALL_TROEVEN, displayScore } from '@deckscores/shared';
 import { TROEF_COLOR, TROEF_LABEL, TROEF_NAME } from '@/constants/troef';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
@@ -36,7 +36,12 @@ export function BoompjeSummary({ boompje }: Props) {
           <Stat
             key={bucket.id}
             label={`Totaal ${bucket.label}`}
-            value={String(boompje.totals[bucket.id] ?? 0)}
+            value={String(
+              displayScore(boompje.totals[bucket.id] ?? 0, {
+                afronden: boompje.settings.afronden,
+                format: boompje.format,
+              }),
+            )}
           />
         ))}
         <Stat label="Aantal giffies" value={String(boompje.giffies.length)} />

@@ -9,8 +9,8 @@ export const TROEF_LABEL: Record<Troef, string> = {
 };
 
 export const TROEF_NAME: Record<Troef, string> = {
-  klaver: 'Klaver',
-  hart: 'Hart',
+  klaver: 'Klaveren',
+  hart: 'Harten',
   schoppen: 'Schoppen',
   ruiten: 'Ruiten',
 };

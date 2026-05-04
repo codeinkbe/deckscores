@@ -63,12 +63,6 @@ export default function ProfielScreen() {
         autoCapitalize="words"
       />
       <KlaverjasInput
-        label="Familie nummer"
-        value={form.member_number}
-        onChangeText={update('member_number')}
-        keyboardType="number-pad"
-      />
-      <KlaverjasInput
         label="E-mail"
         value={form.email}
         onChangeText={update('email')}

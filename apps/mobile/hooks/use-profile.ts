@@ -8,7 +8,6 @@ type ProfileResponse = { profile: Profile | null };
 export type ProfileFormInput = {
   first_name: string;
   last_name: string;
-  member_number: string;
   email: string;
 };
 
@@ -57,7 +56,6 @@ export function useProfile() {
   const defaults: ProfileFormInput = {
     first_name: profile?.first_name ?? user?.firstName ?? '',
     last_name: profile?.last_name ?? user?.lastName ?? '',
-    member_number: profile?.member_number ?? '',
     email: profile?.email ?? user?.primaryEmailAddress?.emailAddress ?? '',
   };
 

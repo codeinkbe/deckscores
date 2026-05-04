@@ -1,12 +1,12 @@
 import {
-    requireUser,
-    UnauthorizedError,
-    unauthorizedResponse,
-} from "@/lib/auth";
-import { mapProfile } from "@/lib/mappers";
-import { ProfileModel } from "@/lib/models/profile.model";
-import { connectToDatabase } from "@/lib/mongodb";
-import { NextRequest } from "next/server";
+  requireUser,
+  UnauthorizedError,
+  unauthorizedResponse,
+} from '@/lib/auth';
+import { mapProfile } from '@/lib/mappers';
+import { ProfileModel } from '@/lib/models/profile.model';
+import { connectToDatabase } from '@/lib/mongodb';
+import { NextRequest } from 'next/server';
 
 export async function GET() {
   try {
@@ -19,8 +19,8 @@ export async function GET() {
     return Response.json({ profile: mapProfile(doc.toObject()) });
   } catch (error) {
     if (error instanceof UnauthorizedError) return unauthorizedResponse();
-    console.error("GET /api/profiles/me failed", error);
-    return Response.json({ error: "Server error" }, { status: 500 });
+    console.error('GET /api/profiles/me failed', error);
+    return Response.json({ error: 'Server error' }, { status: 500 });
   }
 }
 
@@ -31,10 +31,9 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const update = {
-      first_name: String(body.first_name ?? user.first_name ?? ""),
-      last_name: String(body.last_name ?? user.last_name ?? ""),
-      member_number: String(body.member_number ?? ""),
-      email: String(body.email ?? user.email ?? ""),
+      first_name: String(body.first_name ?? user.first_name ?? ''),
+      last_name: String(body.last_name ?? user.last_name ?? ''),
+      email: String(body.email ?? user.email ?? ''),
     };
 
     const doc = await ProfileModel.findOneAndUpdate(
@@ -49,7 +48,7 @@ export async function POST(request: NextRequest) {
     return Response.json({ profile: mapProfile(doc.toObject()) });
   } catch (error) {
     if (error instanceof UnauthorizedError) return unauthorizedResponse();
-    console.error("POST /api/profiles/me failed", error);
-    return Response.json({ error: "Server error" }, { status: 500 });
+    console.error('POST /api/profiles/me failed', error);
+    return Response.json({ error: 'Server error' }, { status: 500 });
   }
 }

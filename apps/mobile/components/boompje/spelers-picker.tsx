@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   Pressable,
@@ -9,55 +8,50 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { Player, ProfileSearchResult } from '@deckscores/shared';
-import { KlaverjasButton } from '@/components/ui/klaverjas-button';
+import type { GroupMember, Player } from '@deckscores/shared';
 import { KlaverjasInput } from '@/components/ui/klaverjas-input';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
-import { useApi } from '@/lib/api';
 
 type Props = {
   visible: boolean;
   title: string;
+  members: GroupMember[];
+  takenMemberIds: string[];
   onClose: () => void;
   onSelect: (player: Player) => void;
 };
 
-type SearchResponse = { results: ProfileSearchResult[] };
-
-export function SpelersPickerModal({ visible, title, onClose, onSelect }: Props) {
-  const api = useApi();
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<ProfileSearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!visible) return;
-    setQuery('');
-    setResults([]);
-  }, [visible]);
-
-  useEffect(() => {
-    if (!visible) return;
-    if (query.trim().length < 2) {
-      setResults([]);
-      return;
-    }
-    const handle = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const response = await api.request<SearchResponse>('/api/profiles/search', {
-          searchParams: { q: query.trim() },
-        });
-        setResults(response.results);
-      } finally {
-        setLoading(false);
+const memberToPlayer = (member: GroupMember): Player =>
+  member.kind === 'account'
+    ? {
+        kind: 'account',
+        member_id: member.id,
+        clerk_id: member.clerk_id,
+        display_name: member.display_name,
       }
-    }, 250);
-    return () => clearTimeout(handle);
-  }, [api, query, visible]);
+    : {
+        kind: 'guest',
+        member_id: member.id,
+        display_name: member.display_name,
+      };
 
-  const guestName = query.trim();
-  const canAddGuest = guestName.length > 0 && !loading;
+export function SpelersPickerModal({
+  visible,
+  title,
+  members,
+  takenMemberIds,
+  onClose,
+  onSelect,
+}: Props) {
+  const [query, setQuery] = useState('');
+
+  const available = useMemo(() => {
+    const taken = new Set(takenMemberIds);
+    const lower = query.trim().toLowerCase();
+    return members
+      .filter((m) => m.status === 'active' && !taken.has(m.id))
+      .filter((m) => (lower ? m.display_name.toLowerCase().includes(lower) : true));
+  }, [members, takenMemberIds, query]);
 
   return (
     <Modal animationType="slide" visible={visible} onRequestClose={onClose} transparent>
@@ -71,69 +65,43 @@ export function SpelersPickerModal({ visible, title, onClose, onSelect }: Props)
           </View>
 
           <KlaverjasInput
-            placeholder="Zoek op naam of familienummer"
+            placeholder="Zoek lid"
             value={query}
             onChangeText={setQuery}
             autoCapitalize="words"
           />
 
-          {loading ? (
-            <View style={styles.loading}>
-              <ActivityIndicator color={Palette.blueDark} />
-            </View>
-          ) : (
-            <FlatList
-              data={results}
-              keyExtractor={(item) => item.clerk_id}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              ListEmptyComponent={
-                query.trim().length >= 2 ? (
-                  <Text style={styles.emptyText}>Geen accounts gevonden</Text>
-                ) : (
-                  <Text style={styles.emptyText}>Typ minimaal 2 letters</Text>
-                )
-              }
-              renderItem={({ item }) => (
-                <Pressable
-                  onPress={() =>
-                    onSelect({
-                      kind: 'account',
-                      clerk_id: item.clerk_id,
-                      display_name: `${item.first_name} ${item.last_name}`.trim(),
-                    })
-                  }
-                  style={({ pressed }) => [styles.resultRow, pressed && styles.resultRowPressed]}
-                >
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarLetter}>
-                      {(item.first_name[0] ?? '?').toUpperCase()}
-                    </Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.resultName}>
-                      {item.first_name} {item.last_name}
-                    </Text>
-                    {item.member_number ? (
-                      <Text style={styles.resultMeta}>nr. {item.member_number}</Text>
-                    ) : null}
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color={Palette.greyMid} />
-                </Pressable>
-              )}
-            />
-          )}
-
-          <View style={styles.guestSection}>
-            <Text style={styles.guestLabel}>Geen account? Voeg toe als gast</Text>
-            <KlaverjasButton
-              label={canAddGuest ? `Voeg "${guestName}" toe als gast` : 'Vul eerst een naam in'}
-              variant="outline"
-              size="md"
-              fullWidth
-              disabled={!canAddGuest}
-              onPress={() => onSelect({ kind: 'guest', display_name: guestName })}
-            />
-          </View>
+          <FlatList
+            data={available}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                Geen leden meer beschikbaar. Voeg er meer toe via de leden-pagina.
+              </Text>
+            }
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => onSelect(memberToPlayer(item))}
+                style={({ pressed }) => [styles.resultRow, pressed && styles.resultRowPressed]}
+              >
+                <View style={styles.avatar}>
+                  <Ionicons
+                    name={item.kind === 'guest' ? 'person-outline' : 'person-circle'}
+                    size={22}
+                    color={Palette.blueDark}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.resultName}>{item.display_name}</Text>
+                  <Text style={styles.resultMeta}>
+                    {item.kind === 'guest' ? 'Gast' : 'Account'}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={Palette.greyMid} />
+              </Pressable>
+            )}
+          />
         </View>
       </View>
     </Modal>
@@ -163,7 +131,6 @@ const styles = StyleSheet.create({
   },
   title: { ...Typography.heading, color: Palette.blueDark },
   closeButton: { padding: Spacing.xs },
-  loading: { padding: Spacing.xl, alignItems: 'center' },
   separator: { height: 1, backgroundColor: Palette.greyVeryLight },
   resultRow: {
     flexDirection: 'row',
@@ -180,10 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarLetter: { color: Palette.blueDark, fontWeight: '700' },
   resultName: { ...Typography.bodyBold, color: Palette.black },
   resultMeta: { color: Palette.greyMid, fontSize: Typography.caption.fontSize },
   emptyText: { color: Palette.greyMid, padding: Spacing.lg, textAlign: 'center' },
-  guestSection: { gap: Spacing.sm, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: Palette.greyVeryLight },
-  guestLabel: { color: Palette.greyDark, fontSize: Typography.caption.fontSize },
 });

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   buildBuckets,
@@ -23,6 +23,7 @@ import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Screen } from '@/components/ui/screen';
 import { Palette, Spacing, Typography } from '@/constants/theme';
 import { useApi } from '@/lib/api';
+import { useGroup } from '@/hooks/use-group';
 import { useProfile } from '@/hooks/use-profile';
 
 const DEFAULT_SETTINGS: BoompjeSettings = {
@@ -34,8 +35,10 @@ const DEFAULT_SETTINGS: BoompjeSettings = {
 
 export default function NieuwBoompje() {
   const router = useRouter();
+  const { group_id: groupId } = useLocalSearchParams<{ group_id?: string }>();
   const api = useApi();
   const { profile } = useProfile();
+  const { group, loading: groupLoading } = useGroup(groupId);
 
   const [format, setFormat] = useState<BoompjeFormat>('16_giffies');
   const [settings, setSettings] = useState<BoompjeSettings>(DEFAULT_SETTINGS);
@@ -51,25 +54,38 @@ export default function NieuwBoompje() {
   const numPlayers = settings.num_players;
   const allSeats = useMemo(() => seatsForNumPlayers(numPlayers), [numPlayers]);
 
-  const filledSeats = useMemo<Record<Seat, Player>>(() => {
-    if (!profile) return seats;
-    const me: Player = {
+  const me = useMemo<Player | null>(() => {
+    if (!profile || !group) return null;
+    const myMember = group.members.find(
+      (m) => m.kind === 'account' && m.clerk_id === profile.clerk_id,
+    );
+    if (!myMember) return null;
+    return {
       kind: 'account',
+      member_id: myMember.id,
       clerk_id: profile.clerk_id,
-      display_name: `${profile.first_name} ${profile.last_name}`.trim() || profile.first_name,
+      display_name: myMember.display_name,
     };
-    return { 0: me, ...seats };
-  }, [seats, profile]);
+  }, [group, profile]);
+
+  useEffect(() => {
+    if (!me) return;
+    setSeats((prev) => (prev[0] ? prev : { ...prev, 0: me }));
+  }, [me]);
 
   const handleChangeSettings = (next: BoompjeSettings) => {
     if (next.num_players !== settings.num_players) {
-      setSeats({});
+      setSeats(me ? { 0: me } : {});
       setDealerSeat(null);
     }
     setSettings(next);
   };
 
-  const allSeatsFilled = allSeats.every((seat) => Boolean(filledSeats[seat]));
+  const allSeatsFilled = allSeats.every((seat) => Boolean(seats[seat]));
+  const takenMemberIds = useMemo(
+    () => Object.values(seats).map((p) => p.member_id),
+    [seats],
+  );
 
   const handleStart = () => {
     if (!allSeatsFilled) return;
@@ -78,17 +94,18 @@ export default function NieuwBoompje() {
   };
 
   const handleConfirmDealer = async () => {
-    if (dealerSeat === null || !allSeatsFilled) return;
+    if (dealerSeat === null || !allSeatsFilled || !groupId) return;
     setSubmitting(true);
     setError(null);
     try {
       const participants: Participant[] = allSeats.map((seat) => ({
-        player: filledSeats[seat],
+        player: seats[seat],
         seat,
       }));
       const buckets = buildBuckets(participants);
 
       const payload: CreateBoompjeInput = {
+        group_id: groupId,
         format,
         settings,
         participants,
@@ -114,6 +131,31 @@ export default function NieuwBoompje() {
     setPickingSeat(null);
   };
 
+  if (!groupId) {
+    return (
+      <Screen>
+        <View style={styles.errorWrap}>
+          <Text style={styles.error}>Geen groep geselecteerd.</Text>
+          <KlaverjasButton
+            label="Naar groepen"
+            variant="primary"
+            onPress={() => router.replace('/(tabs)/groepen')}
+          />
+        </View>
+      </Screen>
+    );
+  }
+
+  if (groupLoading || !group) {
+    return (
+      <Screen>
+        <View style={styles.center}>
+          <ActivityIndicator color={Palette.blueDark} size="large" />
+        </View>
+      </Screen>
+    );
+  }
+
   return (
     <Screen scroll>
       <View style={styles.header}>
@@ -125,7 +167,9 @@ export default function NieuwBoompje() {
       </View>
 
       <Text style={styles.title}>Klaverjas boompje</Text>
-      <Text style={styles.date}>{formatDate(new Date())}</Text>
+      <Text style={styles.date}>
+        {group.name} · {formatDate(new Date())}
+      </Text>
 
       <FormatToggle
         format={format}
@@ -137,7 +181,7 @@ export default function NieuwBoompje() {
       <Text style={styles.sectionTitle}>Wie speelt er?</Text>
       <SpelersCross
         numPlayers={numPlayers}
-        seats={filledSeats}
+        seats={seats}
         onTapSeat={(seat) => setPickingSeat(seat)}
       />
 
@@ -161,6 +205,8 @@ export default function NieuwBoompje() {
       <SpelersPickerModal
         visible={pickingSeat !== null}
         title={pickingSeat !== null ? seatTitle(pickingSeat, numPlayers) : ''}
+        members={group.members}
+        takenMemberIds={takenMemberIds}
         onClose={() => setPickingSeat(null)}
         onSelect={handleSelectPlayer}
       />
@@ -176,7 +222,7 @@ export default function NieuwBoompje() {
         <WieDeeltModal
           visible={wieDeeltOpen}
           numPlayers={numPlayers}
-          seats={filledSeats}
+          seats={seats}
           selectedSeat={dealerSeat}
           onSelectSeat={setDealerSeat}
           onConfirm={submitting ? () => undefined : handleConfirmDealer}
@@ -224,6 +270,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
   },
   error: { color: Palette.redAction, textAlign: 'center' },
+  errorWrap: { gap: Spacing.lg, alignItems: 'center', padding: Spacing.lg },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   actions: { gap: Spacing.md, alignItems: 'center', marginTop: Spacing.lg },
   settingsLink: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, padding: Spacing.sm },
   settingsLinkText: { color: Palette.greyDark, fontWeight: '600', letterSpacing: 1 },

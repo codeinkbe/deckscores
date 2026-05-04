@@ -8,7 +8,8 @@ import type {
 
 type PlayerDoc = {
   kind: 'account' | 'guest';
-  clerk_id?: string;
+  member_id: string;
+  clerk_id: string | null;
   display_name: string;
 };
 
@@ -39,6 +40,7 @@ type GiffieDoc = {
 };
 
 export type BoompjeDoc = {
+  group_id: string;
   owner_clerk_id: string;
   format: BoompjeFormat;
   settings: {
@@ -60,7 +62,8 @@ export type BoompjeDoc = {
 const PlayerSchema = new Schema<PlayerDoc>(
   {
     kind: { type: String, enum: ['account', 'guest'], required: true },
-    clerk_id: { type: String },
+    member_id: { type: String, required: true },
+    clerk_id: { type: String, default: null },
     display_name: { type: String, required: true },
   },
   { _id: false },
@@ -83,14 +86,6 @@ const ScoreBucketSchema = new Schema<ScoreBucketDoc>(
   { _id: false },
 );
 
-const BucketScoreSchema = new Schema<BucketScoreDoc>(
-  {
-    score: { type: Number, required: true },
-    roem: { type: Number, required: true },
-  },
-  { _id: false },
-);
-
 const GiffieSchema = new Schema<GiffieDoc>(
   {
     number: { type: Number, required: true },
@@ -100,7 +95,7 @@ const GiffieSchema = new Schema<GiffieDoc>(
       enum: ['klaver', 'hart', 'schoppen', 'ruiten'],
       required: true,
     },
-    scores: { type: Map, of: BucketScoreSchema, default: {} },
+    scores: { type: Schema.Types.Mixed, default: {} },
     nat: { type: Boolean, default: false },
     pit: { type: String, default: null },
     verzaakt: { type: String, default: null },
@@ -110,6 +105,7 @@ const GiffieSchema = new Schema<GiffieDoc>(
 
 const BoompjeSchema = new Schema<BoompjeDoc>(
   {
+    group_id: { type: String, required: true, index: true },
     owner_clerk_id: { type: String, required: true, index: true },
     format: {
       type: String,
@@ -134,12 +130,12 @@ const BoompjeSchema = new Schema<BoompjeDoc>(
     },
     dealer_seat: { type: Number, required: true },
     status: { type: String, enum: ['open', 'finished'], default: 'open', index: true },
-    totals: { type: Map, of: Number, default: {} },
+    totals: { type: Schema.Types.Mixed, default: {} },
     giffies: { type: [GiffieSchema], default: [] },
     created_at: { type: Date, default: () => new Date() },
     finished_at: { type: Date, default: null },
   },
-  { collection: 'boompjes' },
+  { collection: 'boompjes', minimize: false },
 );
 
 export const BoompjeModel: Model<BoompjeDoc> =

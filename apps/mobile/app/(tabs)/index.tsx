@@ -1,13 +1,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import type { Group } from '@deckscores/shared';
+import { SpiekbriefCard } from '@/components/home/spiekbrief-card';
+import { KlaverjasButton } from '@/components/ui/klaverjas-button';
 import { Screen } from '@/components/ui/screen';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
+import { useGroups } from '@/hooks/use-groups';
 import { useProfile } from '@/hooks/use-profile';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { profile, loading, error } = useProfile();
+  const { groups } = useGroups();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   if (loading || !profile) {
     return (
@@ -19,6 +33,18 @@ export default function HomeScreen() {
     );
   }
 
+  const handleNewBoompje = () => {
+    if (groups.length === 0) {
+      router.push('/groep/new');
+      return;
+    }
+    if (groups.length === 1) {
+      router.push(`/boompje/new?group_id=${groups[0].id}`);
+      return;
+    }
+    setPickerOpen(true);
+  };
+
   return (
     <Screen scroll>
       <Text style={styles.greeting}>Hoi {profile.first_name}</Text>
@@ -28,17 +54,17 @@ export default function HomeScreen() {
       <Pressable
         accessibilityRole="button"
         style={({ pressed }) => [styles.bigButton, pressed && styles.bigButtonPressed]}
-        onPress={() => router.push('/boompje/new')}
+        onPress={handleNewBoompje}
       >
-        <Ionicons name="add" size={72} color={Palette.white} />
+        <Ionicons name="add" size={64} color={Palette.white} />
         <Text style={styles.bigButtonLabel}>Nieuw Boompje</Text>
       </Pressable>
 
       <View style={styles.menu}>
         <MenuItem
-          icon="leaf-outline"
-          label="Open Boom"
-          onPress={() => router.push('/(tabs)/boompjes')}
+          icon="people-outline"
+          label="Groepen"
+          onPress={() => router.push('/(tabs)/groepen')}
         />
         <MenuItem
           icon="book-outline"
@@ -46,8 +72,38 @@ export default function HomeScreen() {
           onPress={() => router.push('/spelregels')}
         />
         <MenuItem icon="bar-chart-outline" label="Statistieken" disabled />
-        <MenuItem icon="settings-outline" label="Instellingen" disabled />
       </View>
+
+      <SpiekbriefCard onPress={() => router.push('/spelregels')} />
+
+      <Modal
+        visible={pickerOpen}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setPickerOpen(false)}
+      >
+        <Pressable style={styles.backdrop} onPress={() => setPickerOpen(false)}>
+          <Pressable style={styles.pickerCard} onPress={() => undefined}>
+            <Text style={styles.pickerTitle}>In welke groep?</Text>
+            {groups.map((group) => (
+              <GroupPickerRow
+                key={group.id}
+                group={group}
+                onPress={() => {
+                  setPickerOpen(false);
+                  router.push(`/boompje/new?group_id=${group.id}`);
+                }}
+              />
+            ))}
+            <KlaverjasButton
+              label="Annuleren"
+              variant="ghost"
+              fullWidth
+              onPress={() => setPickerOpen(false)}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </Screen>
   );
 }
@@ -76,6 +132,19 @@ function MenuItem({ icon, label, onPress, disabled }: MenuItemProps) {
   );
 }
 
+function GroupPickerRow({ group, onPress }: { group: Group; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.pickerRow, pressed && styles.pickerRowPressed]}
+    >
+      <Ionicons name="people" size={20} color={Palette.blueDark} />
+      <Text style={styles.pickerLabel}>{group.name}</Text>
+      <Ionicons name="chevron-forward" size={18} color={Palette.greyMid} />
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   greeting: { ...Typography.heading, color: Palette.blueDark, marginBottom: Spacing.xs },
@@ -83,15 +152,15 @@ const styles = StyleSheet.create({
   bigButton: {
     backgroundColor: Palette.blueDark,
     borderRadius: Radius.lg,
-    paddingVertical: Spacing.xxl,
+    paddingVertical: Spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
   },
   bigButtonPressed: { opacity: 0.85 },
   bigButtonLabel: { color: Palette.white, fontSize: 22, fontWeight: '700' },
-  menu: { gap: Spacing.sm, marginTop: Spacing.xl },
+  menu: { gap: Spacing.sm, marginTop: Spacing.lg },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -110,4 +179,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
   },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  pickerCard: {
+    backgroundColor: Palette.white,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  pickerTitle: {
+    ...Typography.subheading,
+    color: Palette.blueDark,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Palette.greyVeryLight,
+    borderRadius: Radius.md,
+  },
+  pickerRowPressed: { backgroundColor: Palette.blueLight },
+  pickerLabel: { ...Typography.bodyBold, color: Palette.black, flex: 1 },
 });

@@ -13,7 +13,6 @@ import { useProfile } from '@/hooks/use-profile';
 type SetupForm = {
   first_name: string;
   last_name: string;
-  member_number: string;
 };
 
 export default function ProfielSetupScreen() {
@@ -23,7 +22,6 @@ export default function ProfielSetupScreen() {
   const [form, setForm] = useState<SetupForm>({
     first_name: defaults.first_name,
     last_name: defaults.last_name,
-    member_number: defaults.member_number,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +30,7 @@ export default function ProfielSetupScreen() {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const isValid =
-    form.first_name.trim().length > 0 &&
-    form.last_name.trim().length > 0 &&
-    form.member_number.trim().length > 0;
+    form.first_name.trim().length > 0 && form.last_name.trim().length > 0;
 
   const handleSubmit = async () => {
     if (!isValid) return;
@@ -45,7 +41,6 @@ export default function ProfielSetupScreen() {
       await save({
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
-        member_number: form.member_number.trim(),
         email: defaults.email,
       });
       router.replace('/(tabs)');
@@ -90,13 +85,6 @@ export default function ProfielSetupScreen() {
         onChangeText={update('last_name')}
         autoCapitalize="words"
         placeholder="Achternaam"
-      />
-      <KlaverjasInput
-        label="Familie nummer"
-        value={form.member_number}
-        onChangeText={update('member_number')}
-        keyboardType="number-pad"
-        placeholder="Bijv. 42"
       />
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
